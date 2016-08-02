@@ -34,15 +34,15 @@ app.use('/', routes);
 app.use('/users', users);
 
 // openshift stuff
-app.use('/health', health);
-app.use('/info/gen', gen);
-app.use('/info/poll', poll);
+// app.use('/health', health);
+// app.use('/info/gen', gen);
+// app.use('/info/poll', poll);
 
 app.use(function (req, res) {
   var url = req.url;
-  if (url == '/') {
-    url += 'index.html';
-  }
+  // if (url == '/') {
+  //   url += 'index.html';
+  // }
 
   // IMPORTANT: Your application HAS to respond to GET /health with status 200
   //            for OpenShift health monitoring
@@ -51,7 +51,7 @@ app.use(function (req, res) {
     res.writeHead(200);
     res.end();
   }
-  else if (url == '/info/gen' || url == '/info/poll') {
+  else if (url == '/info/gen' || url == '/info/poll' || url == '/info/polly') {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store');
     res.end(JSON.stringify(sysInfo[url.slice(6)]()));
