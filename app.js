@@ -1,9 +1,5 @@
 const http         = require('http'),
       debug        = require('debug')('expresstest:server'),
-      fs           = require('fs'),
-      path         = require('path'),
-      contentTypes = require('./utils/content-types'),
-      sysInfo      = require('./utils/sys-info'),
       env          = process.env,
       app          = require('./routes/app');// express' app
 
@@ -13,7 +9,7 @@ const http         = require('http'),
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(env.PORT || '3000');
 app.set('port', port);
 
 /**
