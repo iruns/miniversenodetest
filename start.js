@@ -36,16 +36,5 @@ if (cluster.isMaster) {
     });
   }
 } else {
-  const http         = require('http'),
-        sysInfo      = require('./utils/sys-info'),
-        app          = require('./app'),
-        env          = process.env;
-
-  app.set('port', env.NODE_PORT || 3000);
-
-  let server = http.createServer(app);
-
-  server.listen(env.NODE_PORT || 3000, env.NODE_IP || 'localhost', function () {
-    console.log(`Application worker ${process.pid} started...`);
-  });
+  require('./server.js');
 }

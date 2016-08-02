@@ -42,7 +42,7 @@ app.use(function (req, res) {
     res.writeHead(200);
     res.end();
   }
-  else if (url == '/info/gen' || url == '/info/poll' || url == '/info/polly') {
+  else if (url == '/info/gen' || url == '/info/poll') {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store');
     res.end(JSON.stringify(sysInfo[url.slice(6)]()));
