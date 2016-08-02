@@ -10,6 +10,10 @@ var bodyParser = require('body-parser');
 var routes = require( path.resolve( __dirname, "./index.js" ) );
 var users = require( path.resolve( __dirname, "./users.js" ) );
 
+// openshift stuff
+var health = require( path.resolve( __dirname, "./openshift/health.js" ) );
+var info = require( path.resolve( __dirname, "./openshift/info.js" ) );
+
 var app = express();
 
 // view engine setup
@@ -27,6 +31,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+// openshift stuff
+app.use('/health', health);
+app.use('/info/gen', info);
+app.use('/info/poll', info);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
