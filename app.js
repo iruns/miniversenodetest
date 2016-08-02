@@ -5,7 +5,7 @@ const http         = require('http'),
       sysInfo      = require('./utils/sys-info'),
       env          = process.env;
 
-app.set('port', env.NODE_PORT || 3000);
+// app.set('port', env.NODE_PORT || 3000);
 
 // let server = http.createServer(app);
 let server = http.createServer(function (req, res) {
