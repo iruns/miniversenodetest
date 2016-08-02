@@ -38,6 +38,41 @@ app.use('/health', health);
 app.use('/info/gen', gen);
 app.use('/info/poll', poll);
 
+app.use(function (req, res) {
+  var url = req.url;
+  if (url == '/') {
+    url += 'index.html';
+  }
+
+  // IMPORTANT: Your application HAS to respond to GET /health with status 200
+  //            for OpenShift health monitoring
+
+  if (url == '/health') {
+    res.writeHead(200);
+    res.end();
+  }
+  else if (url == '/info/gen' || url == '/info/poll') {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.end(JSON.stringify(sysInfo[url.slice(6)]()));
+  }
+  // else {
+    // fs.readFile('./static' + url, function (err, data) {
+    //   if (err) {
+    //     res.writeHead(404);
+    //     res.end('Not found');
+    //   } else {
+    //     let ext = path.extname(url).slice(1);
+    //     res.setHeader('Content-Type', contentTypes[ext]);
+    //     if (ext === 'html') {
+    //       res.setHeader('Cache-Control', 'no-cache, no-store');
+    //     }
+    //     res.end(data);
+    //   }
+    // });
+  // }
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
