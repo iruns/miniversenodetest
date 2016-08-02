@@ -17,11 +17,13 @@ let server = http.createServer(function (req, res) {
   if (url == '/health') {
     res.writeHead(200);
     res.end();
-  } else if (url == '/info/gen' || url == '/info/poll') {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache, no-store');
-    res.end(JSON.stringify(sysInfo[url.slice(6)]()));
-  } else {
+  }
+  // else if (url == '/info/gen' || url == '/info/poll') {
+  //   res.setHeader('Content-Type', 'application/json');
+  //   res.setHeader('Cache-Control', 'no-cache, no-store');
+  //   res.end(JSON.stringify(sysInfo[url.slice(6)]()));
+  // }
+  else {
     fs.readFile('./static' + url, function (err, data) {
       if (err) {
         res.writeHead(404);
