@@ -1,90 +1,43 @@
 const http         = require('http'),
-      debug        = require('debug')('expresstest:server'),
-      env          = process.env,
-      app          = require('./routes/app');// express' app
+      fs           = require('fs'),
+      path         = require('path'),
+      contentTypes = require('./utils/content-types'),
+      sysInfo      = require('./utils/sys-info'),
+      env          = process.env;
 
-// from express' default project's bin/www
+let server = http.createServer(function (req, res) {
+  let url = req.url;
+  if (url == '/') {
+    url += 'index.html';
+  }
 
-/**
- * Get port from environment and store in Express.
- */
+  // IMPORTANT: Your application HAS to respond to GET /health with status 200
+  //            for OpenShift health monitoring
 
-var port = normalizePort(env.PORT || '3000');
-app.set('port', port);
+  if (url == '/health') {
+    res.writeHead(200);
+    res.end();
+  } else if (url == '/info/gen' || url == '/info/poll') {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.end(JSON.stringify(sysInfo[url.slice(6)]()));
+  } else {
+    fs.readFile('./static' + url, function (err, data) {
+      if (err) {
+        res.writeHead(404);
+        res.end('Not found');
+      } else {
+        let ext = path.extname(url).slice(1);
+        res.setHeader('Content-Type', contentTypes[ext]);
+        if (ext === 'html') {
+          res.setHeader('Cache-Control', 'no-cache, no-store');
+        }
+        res.end(data);
+      }
+    });
+  }
+});
 
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-// server.listen(port);
-server.listen(port, env.NODE_IP || 'localhost', function () {
+server.listen(env.NODE_PORT || 3000, env.NODE_IP || 'localhost', function () {
   console.log(`Application worker ${process.pid} started...`);
 });
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
